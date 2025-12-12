@@ -10,13 +10,19 @@
     <meta name="apple-mobile-web-app-title" content="WhatToEat">
     <link rel="manifest" href="{{ asset('manifest.json') }}">
     <link rel="apple-touch-icon" href="{{ asset('icon-192.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('icon-192.png') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('icon-512.png') }}">
+    <link rel="shortcut icon" href="{{ asset('icon-192.png') }}">
     <title>What To Eat - Meal Suggestions</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] dark:text-[#EDEDEC] min-h-screen">
     <div class="container mx-auto px-4 py-8 max-w-4xl">
         <header class="mb-8">
-            <h1 class="text-3xl font-bold mb-2">What To Eat</h1>
+            <h1 class="text-3xl font-bold mb-2 flex items-center gap-3">
+                <img src="{{ asset('icon-192.png') }}" alt="What To Eat" class="w-10 h-10 dark:invert" style="filter: invert(1);" />
+                <span>What To Eat</span>
+            </h1>
             <p class="text-[#706f6c] dark:text-[#A1A09A]">Track your meals and get suggestions for what you haven't eaten in a while</p>
         </header>
 

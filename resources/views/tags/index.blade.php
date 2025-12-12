@@ -10,6 +10,9 @@
     <meta name="apple-mobile-web-app-title" content="WhatToEat">
     <link rel="manifest" href="{{ asset('manifest.json') }}">
     <link rel="apple-touch-icon" href="{{ asset('icon-192.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('icon-192.png') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('icon-512.png') }}">
+    <link rel="shortcut icon" href="{{ asset('icon-192.png') }}">
     <title>Manage Tags - What To Eat</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>

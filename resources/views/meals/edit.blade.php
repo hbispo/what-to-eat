@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('icon-192.png') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('icon-512.png') }}">
+    <link rel="shortcut icon" href="{{ asset('icon-192.png') }}">
     <title>Edit Meal - What To Eat</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
