@@ -10,4 +10,12 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
+    server: {
+        host: 'whattoeat.lan',
+        https: true, // Vite will generate its own self-signed certificate
+        hmr: {
+            host: 'whattoeat.lan',
+            protocol: 'wss',
+        },
+    },
 });

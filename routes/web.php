@@ -9,6 +9,13 @@ Route::get('/', function () {
     return redirect()->route('meals.index');
 });
 
+// Service worker route (fallback if direct file access doesn't work)
+Route::get('/sw.js', function () {
+    return response()->file(public_path('sw.js'), [
+        'Content-Type' => 'application/javascript',
+    ]);
+});
+
 Route::get('meals/list', [MealController::class, 'list'])->name('meals.list');
 Route::post('meals/accept-suggestion', [MealController::class, 'acceptSuggestion'])->name('meals.accept-suggestion');
 Route::get('meals/customize-suggestion', [MealController::class, 'customizeSuggestion'])->name('meals.customize-suggestion');

@@ -4,6 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="theme-color" content="#1b1b18">
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
     <title>Manage Food Items - What To Eat</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -93,6 +95,21 @@
             @endif
         </div>
     </div>
+
+    <script>
+        // Register service worker for PWA caching
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('{{ asset('sw.js') }}')
+                    .then((registration) => {
+                        console.log('ServiceWorker registered successfully:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.error('ServiceWorker registration failed:', error);
+                    });
+            });
+        }
+    </script>
 </body>
 </html>
 
