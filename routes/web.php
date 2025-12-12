@@ -16,6 +16,13 @@ Route::get('/sw.js', function () {
     ]);
 });
 
+// Manifest route (ensure correct MIME type)
+Route::get('/manifest.json', function () {
+    return response()->file(public_path('manifest.json'), [
+        'Content-Type' => 'application/manifest+json',
+    ]);
+});
+
 Route::get('meals/list', [MealController::class, 'list'])->name('meals.list');
 Route::post('meals/accept-suggestion', [MealController::class, 'acceptSuggestion'])->name('meals.accept-suggestion');
 Route::get('meals/customize-suggestion', [MealController::class, 'customizeSuggestion'])->name('meals.customize-suggestion');
