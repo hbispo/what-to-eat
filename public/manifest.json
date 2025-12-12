@@ -1,6 +1,6 @@
 {
-    "name": "What To Eat",
-    "short_name": "WhatToEat",
+    "name": "What To Eat - Meal Planner",
+    "short_name": "What To Eat",
     "description": "Track your meals and get suggestions for what you haven't eaten in a while",
     "start_url": "/",
     "scope": "/",
