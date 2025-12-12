@@ -113,6 +113,20 @@
                 navigator.serviceWorker.register('{{ asset('sw.js') }}')
                     .then((registration) => {
                         console.log('ServiceWorker registered successfully:', registration.scope);
+                        
+                        // Invalidate cache for this page if we have a success message (indicating a redirect after mutation)
+                        @if(session('success'))
+                            if (registration.active) {
+                                // Invalidate the cache for this pathname (without query params)
+                                registration.active.postMessage({
+                                    type: 'INVALIDATE_CACHE',
+                                    url: window.location.pathname
+                                });
+                            } else if (registration.waiting) {
+                                // If service worker is waiting, activate it first
+                                registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+                            }
+                        @endif
                     })
                     .catch((error) => {
                         console.error('ServiceWorker registration failed:', error);

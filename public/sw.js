@@ -39,6 +39,24 @@ self.addEventListener('activate', (event) => {
     return self.clients.claim();
 });
 
+// Listen for messages from the page to invalidate cache
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'INVALIDATE_CACHE') {
+        const urlPath = event.data.url;
+        caches.open(CACHE_NAME).then((cache) => {
+            cache.keys().then((keys) => {
+                keys.forEach((key) => {
+                    const keyUrl = new URL(key.url);
+                    // Delete cache entries that match the pathname
+                    if (!urlPath || keyUrl.pathname === urlPath || keyUrl.pathname === new URL(urlPath, self.location.origin).pathname) {
+                        cache.delete(key);
+                    }
+                });
+            });
+        });
+    }
+});
+
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
     const { request } = event;
@@ -71,6 +89,24 @@ self.addEventListener('fetch', (event) => {
     if (isReadOnlyRoute || url.pathname.startsWith('/build/') || url.pathname.startsWith('/css/') || url.pathname.startsWith('/js/') || url.pathname === '/favicon.ico' || url.pathname === '/manifest.json') {
         event.respondWith(
             caches.match(request).then((cachedResponse) => {
+                // Check if this is a fresh request (no-cache header or cache-busting query param)
+                const cacheControl = request.headers.get('Cache-Control');
+                const hasNoCache = cacheControl && (cacheControl.includes('no-cache') || cacheControl.includes('no-store'));
+                const hasCacheBust = url.searchParams.has('_sw_nocache');
+                
+                // If explicitly requesting fresh data, bypass cache
+                if (hasNoCache || hasCacheBust) {
+                    return fetch(request).then((response) => {
+                        if (response && response.status === 200 && response.type === 'basic') {
+                            const responseToCache = response.clone();
+                            caches.open(CACHE_NAME).then((cache) => {
+                                cache.put(request, responseToCache);
+                            });
+                        }
+                        return response;
+                    });
+                }
+                
                 if (cachedResponse) {
                     // Return cached version, but also update in background
                     fetch(request).then((response) => {

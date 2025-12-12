@@ -34,7 +34,7 @@ class TagController extends Controller
 
         TagCategory::create($validated);
 
-        return redirect()->route('tags.index')
+        return redirect()->route('tags.index', ['_sw_nocache' => time()])
             ->with('success', 'Tag category created successfully!');
     }
 
@@ -62,7 +62,7 @@ class TagController extends Controller
 
         Tag::create($validated);
 
-        return redirect()->route('tags.index')
+        return redirect()->route('tags.index', ['_sw_nocache' => time()])
             ->with('success', 'Tag created successfully!');
     }
 
@@ -82,7 +82,7 @@ class TagController extends Controller
 
         $category->update($validated);
 
-        return redirect()->route('tags.index')
+        return redirect()->route('tags.index', ['_sw_nocache' => time()])
             ->with('success', 'Tag category updated successfully!');
     }
 
@@ -111,21 +111,21 @@ class TagController extends Controller
 
         $tag->update($validated);
 
-        return redirect()->route('tags.index')
+        return redirect()->route('tags.index', ['_sw_nocache' => time()])
             ->with('success', 'Tag updated successfully!');
     }
 
     public function destroyCategory(TagCategory $category)
     {
         $category->delete();
-        return redirect()->route('tags.index')
+        return redirect()->route('tags.index', ['_sw_nocache' => time()])
             ->with('success', 'Tag category deleted successfully!');
     }
 
     public function destroyTag(Tag $tag)
     {
         $tag->delete();
-        return redirect()->route('tags.index')
+        return redirect()->route('tags.index', ['_sw_nocache' => time()])
             ->with('success', 'Tag deleted successfully!');
     }
 }

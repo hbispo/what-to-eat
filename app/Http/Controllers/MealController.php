@@ -306,7 +306,7 @@ class MealController extends Controller
             $meal->tags()->sync($validated['tag_ids']);
         }
 
-        return redirect()->route('meals.index', ['meal_type' => $validated['meal_type']])
+        return redirect()->route('meals.index', ['meal_type' => $validated['meal_type'], '_sw_nocache' => time()])
             ->with('success', 'Meal accepted and recorded successfully!');
     }
 
@@ -434,7 +434,7 @@ class MealController extends Controller
         }
 
         // Redirect to front page with the meal type filter preserved
-        $redirectParams = ['meal_type' => $validated['meal_type']];
+        $redirectParams = ['meal_type' => $validated['meal_type'], '_sw_nocache' => time()];
         return redirect()->route('meals.index', $redirectParams)
             ->with('success', 'Meal recorded successfully!');
     }
@@ -561,7 +561,7 @@ class MealController extends Controller
         // Sync tags
         $meal->tags()->sync($validated['tags'] ?? []);
 
-        return redirect()->route('meals.list')
+        return redirect()->route('meals.list', ['_sw_nocache' => time()])
             ->with('success', 'Meal updated successfully!');
     }
 
@@ -575,7 +575,7 @@ class MealController extends Controller
 
         $meal->delete();
 
-        return redirect()->route('meals.list')
+        return redirect()->route('meals.list', ['_sw_nocache' => time()])
             ->with('success', 'Meal deleted successfully!');
     }
 }

@@ -61,7 +61,7 @@ class FoodItemController extends Controller
         // Sync tags
         $foodItem->tags()->sync($validated['tags'] ?? []);
 
-        return redirect()->route('food-items.index')
+        return redirect()->route('food-items.index', ['_sw_nocache' => time()])
             ->with('success', 'Food item updated successfully!');
     }
 
@@ -71,13 +71,13 @@ class FoodItemController extends Controller
         $mealCount = $foodItem->meals()->count();
         
         if ($mealCount > 0) {
-            return redirect()->route('food-items.index')
+            return redirect()->route('food-items.index', ['_sw_nocache' => time()])
                 ->with('error', "Cannot delete food item '{$foodItem->name}' because it is used in {$mealCount} meal(s).");
         }
 
         $foodItem->delete();
 
-        return redirect()->route('food-items.index')
+        return redirect()->route('food-items.index', ['_sw_nocache' => time()])
             ->with('success', 'Food item deleted successfully!');
     }
 }
