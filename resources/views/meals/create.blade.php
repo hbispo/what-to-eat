@@ -87,7 +87,7 @@
                         @else
                             <div class="food-item-row border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm p-3">
                                 <div class="flex gap-2 mb-2">
-                                    <input type="text" name="food_items[]" placeholder="Enter food item (e.g., Chicken, Rice, Broccoli)" list="foodItemsList" class="flex-1 px-4 py-2 border border-[#e3e3e0] dark:border-[#3E3E3A] bg-white dark:bg-[#161615] rounded-sm" required>
+                                    <input type="text" name="food_items[]" placeholder="Enter food item" list="foodItemsList" class="flex-1 px-4 py-2 border border-[#e3e3e0] dark:border-[#3E3E3A] bg-white dark:bg-[#161615] rounded-sm" required>
                                     <button type="button" onclick="removeFoodItem(this)" class="px-4 py-2 bg-red-600 text-white rounded-sm hover:bg-red-700">X</button>
                                 </div>
                                 @if($foodItemTags->count() > 0)
@@ -95,9 +95,20 @@
                                         <label class="text-xs text-[#706f6c] dark:text-[#A1A09A] mb-1 block">Tags (optional):</label>
                                         <div class="flex flex-wrap gap-2">
                                             @foreach($foodItemTags as $tag)
-                                                <label class="inline-flex items-center text-xs">
+                                                @php
+                                                    $bgColor = $tag->category && $tag->category->color 
+                                                        ? $tag->category->color 
+                                                        : '';
+                                                    $textColor = $tag->category && $tag->category->color 
+                                                        ? 'text-white' 
+                                                        : '';
+                                                @endphp
+                                                <label class="inline-flex items-center text-xs px-2 py-0.5 rounded border border-[#e3e3e0] dark:border-[#3E3E3A]"
+                                                      @if($tag->category && $tag->category->color)
+                                                          style="background-color: {{ $tag->category->color }}; border-color: {{ $tag->category->color }};"
+                                                      @endif>
                                                     <input type="checkbox" name="food_item_tags[0][]" value="{{ $tag->id }}" class="mr-1">
-                                                    {{ $tag->name }}
+                                                    <span class="{{ $textColor }}">{{ $tag->name }}</span>
                                                 </label>
                                             @endforeach
                                         </div>
