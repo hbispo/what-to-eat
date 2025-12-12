@@ -35,74 +35,6 @@
             </a>
         </div>
 
-        <div class="bg-white dark:bg-[#161615] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] rounded-lg p-6 mb-6">
-            <h2 class="text-lg font-semibold mb-4">Filter by Meal Type</h2>
-            <form method="GET" action="{{ route('meals.index') }}" id="mealTypeFilterForm">
-                @if(!empty($selectedTags))
-                    @foreach($selectedTags as $tagId)
-                        <input type="hidden" name="tags[]" value="{{ $tagId }}">
-                    @endforeach
-                @endif
-                <div class="flex flex-wrap gap-2">
-                    <label class="inline-flex items-center px-3 py-1 border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition {{ $selectedMealType === 'all' ? 'bg-gray-100 dark:bg-gray-800' : '' }}">
-                        <input type="radio" name="meal_type" value="all"
-                               {{ $selectedMealType === 'all' ? 'checked' : '' }}
-                               onchange="document.getElementById('mealTypeFilterForm').submit();"
-                               class="mr-2">
-                        <span class="text-sm">All Meals</span>
-                    </label>
-                    <label class="inline-flex items-center px-3 py-1 border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition {{ $selectedMealType === 'breakfast_snack' ? 'bg-gray-100 dark:bg-gray-800' : '' }}">
-                        <input type="radio" name="meal_type" value="breakfast_snack" 
-                               {{ $selectedMealType === 'breakfast_snack' ? 'checked' : '' }}
-                               onchange="document.getElementById('mealTypeFilterForm').submit();"
-                               class="mr-2">
-                        <span class="text-sm">Breakfast/Snack</span>
-                    </label>
-                    <label class="inline-flex items-center px-3 py-1 border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition {{ $selectedMealType === 'lunch_dinner' ? 'bg-gray-100 dark:bg-gray-800' : '' }}">
-                        <input type="radio" name="meal_type" value="lunch_dinner" 
-                               {{ $selectedMealType === 'lunch_dinner' ? 'checked' : '' }}
-                               onchange="document.getElementById('mealTypeFilterForm').submit();"
-                               class="mr-2">
-                        <span class="text-sm">Lunch/Dinner</span>
-                    </label>
-                </div>
-            </form>
-        </div>
-
-        @if($tags->count() > 0)
-        <div class="bg-white dark:bg-[#161615] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] rounded-lg p-6 mb-6">
-            <h2 class="text-lg font-semibold mb-4">Filter by Tags</h2>
-            <form method="GET" action="{{ route('meals.index') }}" id="tagFilterForm">
-                @if($selectedMealType && $selectedMealType !== 'all')
-                    <input type="hidden" name="meal_type" value="{{ $selectedMealType }}">
-                @endif
-                <div class="flex flex-wrap gap-2 mb-4">
-                    @foreach($tags as $tag)
-                        @php
-                            $bgColor = $tag->category && $tag->category->color 
-                                ? $tag->category->color 
-                                : '';
-                            $textColor = $tag->category && $tag->category->color 
-                                ? 'text-white' 
-                                : '';
-                        @endphp
-                        <label class="inline-flex items-center px-3 py-1 border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition {{ $bgColor ? '' : '' }}"
-                              @if($tag->category && $tag->category->color)
-                                  style="background-color: {{ $tag->category->color }}; border-color: {{ $tag->category->color }};"
-                              @endif>
-                            <input type="checkbox" name="tags[]" value="{{ $tag->id }}" 
-                                   {{ in_array($tag->id, $selectedTags ?? []) ? 'checked' : '' }}
-                                   onchange="document.getElementById('tagFilterForm').submit();"
-                                   class="mr-2">
-                            <span class="text-sm {{ $textColor }}">{{ $tag->name }}</span>
-                        </label>
-                    @endforeach
-                </div>
-                <a href="{{ route('meals.index') }}" class="text-sm text-blue-600 dark:text-blue-400 underline">Clear all filters</a>
-            </form>
-        </div>
-        @endif
-
         @if($mealSuggestions->count() > 0 || $foodItemSuggestions->count() > 0)
             @if($mealSuggestions->count() > 0)
             <div class="bg-white dark:bg-[#161615] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] rounded-lg p-6 mb-6">
@@ -201,7 +133,7 @@
             @endif
 
             @if($foodItemSuggestions->count() > 0)
-            <div class="bg-white dark:bg-[#161615] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] rounded-lg p-6">
+            <div class="bg-white dark:bg-[#161615] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] rounded-lg p-6 mb-6">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-xl font-semibold">Suggested Food Items</h2>
                     <form method="GET" action="{{ route('meals.customize-suggestion') }}" id="addSelectedItemsForm" style="display: none;">
@@ -269,9 +201,77 @@
             </div>
             @endif
         @else
-            <div class="bg-white dark:bg-[#161615] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] rounded-lg p-6">
+            <div class="bg-white dark:bg-[#161615] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] rounded-lg p-6 mb-6">
                 <p class="text-[#706f6c] dark:text-[#A1A09A] text-center py-8">No meals or food items tracked yet. Add your first meal to get started!</p>
             </div>
+        @endif
+
+        <div class="bg-white dark:bg-[#161615] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] rounded-lg p-6 mb-6">
+            <h2 class="text-lg font-semibold mb-4">Filter by Meal Type</h2>
+            <form method="GET" action="{{ route('meals.index') }}" id="mealTypeFilterForm">
+                @if(!empty($selectedTags))
+                    @foreach($selectedTags as $tagId)
+                        <input type="hidden" name="tags[]" value="{{ $tagId }}">
+                    @endforeach
+                @endif
+                <div class="flex flex-wrap gap-2">
+                    <label class="inline-flex items-center px-3 py-1 border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition {{ $selectedMealType === 'all' ? 'bg-gray-100 dark:bg-gray-800' : '' }}">
+                        <input type="radio" name="meal_type" value="all"
+                               {{ $selectedMealType === 'all' ? 'checked' : '' }}
+                               onchange="document.getElementById('mealTypeFilterForm').submit();"
+                               class="mr-2">
+                        <span class="text-sm">All Meals</span>
+                    </label>
+                    <label class="inline-flex items-center px-3 py-1 border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition {{ $selectedMealType === 'breakfast_snack' ? 'bg-gray-100 dark:bg-gray-800' : '' }}">
+                        <input type="radio" name="meal_type" value="breakfast_snack" 
+                               {{ $selectedMealType === 'breakfast_snack' ? 'checked' : '' }}
+                               onchange="document.getElementById('mealTypeFilterForm').submit();"
+                               class="mr-2">
+                        <span class="text-sm">Breakfast/Snack</span>
+                    </label>
+                    <label class="inline-flex items-center px-3 py-1 border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition {{ $selectedMealType === 'lunch_dinner' ? 'bg-gray-100 dark:bg-gray-800' : '' }}">
+                        <input type="radio" name="meal_type" value="lunch_dinner" 
+                               {{ $selectedMealType === 'lunch_dinner' ? 'checked' : '' }}
+                               onchange="document.getElementById('mealTypeFilterForm').submit();"
+                               class="mr-2">
+                        <span class="text-sm">Lunch/Dinner</span>
+                    </label>
+                </div>
+            </form>
+        </div>
+
+        @if($tags->count() > 0)
+        <div class="bg-white dark:bg-[#161615] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] rounded-lg p-6">
+            <h2 class="text-lg font-semibold mb-4">Filter by Tags</h2>
+            <form method="GET" action="{{ route('meals.index') }}" id="tagFilterForm">
+                @if($selectedMealType && $selectedMealType !== 'all')
+                    <input type="hidden" name="meal_type" value="{{ $selectedMealType }}">
+                @endif
+                <div class="flex flex-wrap gap-2 mb-4">
+                    @foreach($tags as $tag)
+                        @php
+                            $bgColor = $tag->category && $tag->category->color 
+                                ? $tag->category->color 
+                                : '';
+                            $textColor = $tag->category && $tag->category->color 
+                                ? 'text-white' 
+                                : '';
+                        @endphp
+                        <label class="inline-flex items-center px-3 py-1 border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition {{ $bgColor ? '' : '' }}"
+                              @if($tag->category && $tag->category->color)
+                                  style="background-color: {{ $tag->category->color }}; border-color: {{ $tag->category->color }};"
+                              @endif>
+                            <input type="checkbox" name="tags[]" value="{{ $tag->id }}" 
+                                   {{ in_array($tag->id, $selectedTags ?? []) ? 'checked' : '' }}
+                                   onchange="document.getElementById('tagFilterForm').submit();"
+                                   class="mr-2">
+                            <span class="text-sm {{ $textColor }}">{{ $tag->name }}</span>
+                        </label>
+                    @endforeach
+                </div>
+                <a href="{{ route('meals.index') }}" class="text-sm text-blue-600 dark:text-blue-400 underline">Clear all filters</a>
+            </form>
+        </div>
         @endif
     </div>
 
