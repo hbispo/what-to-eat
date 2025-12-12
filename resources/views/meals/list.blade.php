@@ -22,10 +22,10 @@
 
         <div class="mb-8 flex gap-4">
             <a href="{{ route('meals.index') }}" class="inline-block px-5 py-2 border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm hover:border-[#19140035] dark:hover:border-[#62605b] transition">
-                ← Back Home
+                ← Home
             </a>
             <a href="{{ route('meals.create') }}" class="inline-block px-5 py-2 bg-[#1b1b18] dark:bg-[#eeeeec] text-white dark:text-[#1C1C1A] rounded-sm hover:bg-black dark:hover:bg-white transition">
-                + Add Meal
+                + Meal
             </a>
         </div>
 
