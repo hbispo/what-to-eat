@@ -20,17 +20,17 @@
             </div>
         @endif
 
-        <div class="mb-8 flex gap-4">
-            <a href="{{ route('meals.create') }}" class="inline-block px-5 py-2 bg-[#1b1b18] dark:bg-[#eeeeec] text-white dark:text-[#1C1C1A] rounded-sm hover:bg-black dark:hover:bg-white transition">
+        <div class="mb-8 flex flex-wrap gap-2 sm:gap-4">
+            <a href="{{ route('meals.create') }}" class="inline-block px-5 py-2 bg-[#1b1b18] dark:bg-[#eeeeec] text-white dark:text-[#1C1C1A] rounded-sm hover:bg-black dark:hover:bg-white transition whitespace-nowrap">
                 +
             </a>
-            <a href="{{ route('meals.list') }}" class="inline-block px-5 py-2 border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm hover:border-[#19140035] dark:hover:border-[#62605b] transition">
+            <a href="{{ route('meals.list') }}" class="inline-block px-5 py-2 border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm hover:border-[#19140035] dark:hover:border-[#62605b] transition whitespace-nowrap">
                 Meals
             </a>
-            <a href="{{ route('food-items.index') }}" class="inline-block px-5 py-2 border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm hover:border-[#19140035] dark:hover:border-[#62605b] transition">
+            <a href="{{ route('food-items.index') }}" class="inline-block px-5 py-2 border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm hover:border-[#19140035] dark:hover:border-[#62605b] transition whitespace-nowrap">
                 Items
             </a>
-            <a href="{{ route('tags.index') }}" class="inline-block px-5 py-2 border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm hover:border-[#19140035] dark:hover:border-[#62605b] transition">
+            <a href="{{ route('tags.index') }}" class="inline-block px-5 py-2 border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm hover:border-[#19140035] dark:hover:border-[#62605b] transition whitespace-nowrap">
                 Tags
             </a>
         </div>
@@ -52,115 +52,22 @@
                 </h2>
                 <ul class="space-y-3">
                     @foreach($mealSuggestions as $mealSuggestion)
-                        <li class="flex items-center justify-between p-3 border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm">
-                            <div class="flex-1">
-                                <div class="flex items-center gap-2 mb-1">
-                                    @if($mealSuggestion['meal_type'])
-                                        <span class="px-2 py-0.5 text-xs font-medium bg-gray-100 dark:bg-gray-800 rounded capitalize">
-                                            {{ $mealSuggestion['meal_type'] }}
-                                        </span>
-                                    @endif
-                                    <span class="font-medium">
-                                        {{ $mealSuggestion['food_items']->pluck('name')->join(', ') }}
-                                    </span>
-                                </div>
-                                @if($mealSuggestion['tags']->count() > 0)
-                                    <div class="mt-1 flex flex-wrap gap-1">
-                                        @foreach($mealSuggestion['tags'] as $tag)
-                                            @php
-                                                $bgColor = $tag->category && $tag->category->color 
-                                                    ? $tag->category->color 
-                                                    : 'bg-gray-100 dark:bg-gray-800';
-                                                $textColor = $tag->category && $tag->category->color 
-                                                    ? 'text-white' 
-                                                    : '';
-                                            @endphp
-                                            <span class="text-xs px-2 py-0.5 rounded {{ $bgColor }} {{ $textColor }}" 
-                                                  @if($tag->category && $tag->category->color)
-                                                      style="background-color: {{ $tag->category->color }};"
-                                                  @endif>
-                                                {{ $tag->name }}
+                        <li class="p-3 border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm">
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex flex-wrap items-center gap-2 mb-1">
+                                        @if($mealSuggestion['meal_type'])
+                                            <span class="px-2 py-0.5 text-xs font-medium bg-gray-100 dark:bg-gray-800 rounded capitalize whitespace-nowrap">
+                                                {{ $mealSuggestion['meal_type'] }}
                                             </span>
-                                        @endforeach
-                                    </div>
-                                @endif
-                            </div>
-                            <div class="flex items-center gap-3 ml-4">
-                                <span class="text-sm text-[#706f6c] dark:text-[#A1A09A]">
-                                    @if($mealSuggestion['last_eaten_date'])
-                                        @php
-                                            // Parse as UTC (how it's stored) and convert to app timezone for display
-                                            $lastEaten = \Carbon\Carbon::parse($mealSuggestion['last_eaten_date'], 'UTC')
-                                                ->setTimezone(config('app.timezone'));
-                                            $now = \Carbon\Carbon::now(config('app.timezone'));
-                                        @endphp
-                                        <span title="{{ $lastEaten->toIso8601String() }}">
-                                            Last eaten: {{ $lastEaten->diffForHumans($now) }}
-                                        </span>
-                                    @else
-                                        Never eaten
-                                    @endif
-                                </span>
-                                <div class="flex gap-2">
-                                    <form method="POST" action="{{ route('meals.accept-suggestion') }}" class="inline">
-                                        @csrf
-                                        @foreach($mealSuggestion['food_items']->pluck('id') as $foodItemId)
-                                            <input type="hidden" name="food_item_ids[]" value="{{ $foodItemId }}">
-                                        @endforeach
-                                        @if($mealSuggestion['tags']->count() > 0)
-                                            @foreach($mealSuggestion['tags']->pluck('id') as $tagId)
-                                                <input type="hidden" name="tag_ids[]" value="{{ $tagId }}">
-                                            @endforeach
                                         @endif
-                                        <input type="hidden" name="meal_type" value="{{ $mealSuggestion['meal_type'] ?? $selectedMealType }}">
-                                        <button type="submit" class="px-3 py-1 text-sm bg-green-600 text-white rounded-sm hover:bg-green-700">
-                                            Accept
-                                        </button>
-                                    </form>
-                                    <a href="{{ route('meals.customize-suggestion', [
-                                        'food_item_ids' => $mealSuggestion['food_items']->pluck('id')->toArray(),
-                                        'tag_ids' => $mealSuggestion['tags']->pluck('id')->toArray(),
-                                        'meal_type' => $mealSuggestion['meal_type'] ?? $selectedMealType
-                                    ]) }}" class="px-3 py-1 text-sm border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm hover:border-[#19140035] dark:hover:border-[#62605b] transition">
-                                        Customize
-                                    </a>
-                                </div>
-                            </div>
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
-            @endif
-
-            @if($foodItemSuggestions->count() > 0)
-            <div class="bg-white dark:bg-[#161615] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] rounded-lg p-6 mb-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xl font-semibold">Suggested Food Items</h2>
-                    <form method="GET" action="{{ route('meals.customize-suggestion') }}" id="addSelectedItemsForm" style="display: none;">
-                        <div id="selectedFoodItemIdsContainer"></div>
-                        <div id="selectedTagIdsContainer"></div>
-                        <input type="hidden" name="meal_type" value="{{ $nextMealType }}">
-                        <button type="submit" class="px-4 py-2 text-sm bg-[#1b1b18] dark:bg-[#eeeeec] text-white dark:text-[#1C1C1A] rounded-sm hover:bg-black dark:hover:bg-white transition">
-                            Add Selected to Meal
-                        </button>
-                    </form>
-                </div>
-                <ul class="space-y-3">
-                    @foreach($foodItemSuggestions as $foodItem)
-                        <li class="flex items-center justify-between p-3 border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm">
-                            <div class="flex items-center gap-3 flex-1">
-                                <input type="checkbox" 
-                                       name="selected_food_items[]" 
-                                       value="{{ $foodItem->id }}" 
-                                       class="food-item-checkbox"
-                                       data-food-item-id="{{ $foodItem->id }}"
-                                       data-tag-ids="{{ $foodItem->tags->pluck('id')->toJson() }}"
-                                       onchange="updateAddButton()">
-                                <div class="flex-1">
-                                    <span class="font-medium">{{ $foodItem->name }}</span>
-                                    @if($foodItem->tags->count() > 0)
+                                        <span class="font-medium break-words">
+                                            {{ $mealSuggestion['food_items']->pluck('name')->join(', ') }}
+                                        </span>
+                                    </div>
+                                    @if($mealSuggestion['tags']->count() > 0)
                                         <div class="mt-1 flex flex-wrap gap-1">
-                                            @foreach($foodItem->tags as $tag)
+                                            @foreach($mealSuggestion['tags'] as $tag)
                                                 @php
                                                     $bgColor = $tag->category && $tag->category->color 
                                                         ? $tag->category->color 
@@ -179,22 +86,119 @@
                                         </div>
                                     @endif
                                 </div>
-                            </div>
-                            <span class="text-sm text-[#706f6c] dark:text-[#A1A09A] ml-4">
-                                @if($foodItem->last_eaten_date)
-                                    @php
-                                        // Parse as UTC (how it's stored) and convert to app timezone for display
-                                        $lastEaten = \Carbon\Carbon::parse($foodItem->last_eaten_date, 'UTC')
-                                            ->setTimezone(config('app.timezone'));
-                                        $now = \Carbon\Carbon::now(config('app.timezone'));
-                                    @endphp
-                                    <span title="{{ $lastEaten->toIso8601String() }}">
-                                        Last eaten: {{ $lastEaten->diffForHumans($now) }}
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 flex-shrink-0">
+                                    <span class="text-sm text-[#706f6c] dark:text-[#A1A09A] whitespace-nowrap">
+                                        @if($mealSuggestion['last_eaten_date'])
+                                            @php
+                                                // Parse as UTC (how it's stored) and convert to app timezone for display
+                                                $lastEaten = \Carbon\Carbon::parse($mealSuggestion['last_eaten_date'], 'UTC')
+                                                    ->setTimezone(config('app.timezone'));
+                                                $now = \Carbon\Carbon::now(config('app.timezone'));
+                                            @endphp
+                                            <span title="{{ $lastEaten->toIso8601String() }}">
+                                                Last eaten: {{ $lastEaten->diffForHumans($now) }}
+                                            </span>
+                                        @else
+                                            Never eaten
+                                        @endif
                                     </span>
-                                @else
-                                    Never eaten
-                                @endif
-                            </span>
+                                    <div class="flex gap-2">
+                                        <form method="POST" action="{{ route('meals.accept-suggestion') }}" class="inline">
+                                            @csrf
+                                            @foreach($mealSuggestion['food_items']->pluck('id') as $foodItemId)
+                                                <input type="hidden" name="food_item_ids[]" value="{{ $foodItemId }}">
+                                            @endforeach
+                                            @if($mealSuggestion['tags']->count() > 0)
+                                                @foreach($mealSuggestion['tags']->pluck('id') as $tagId)
+                                                    <input type="hidden" name="tag_ids[]" value="{{ $tagId }}">
+                                                @endforeach
+                                            @endif
+                                            <input type="hidden" name="meal_type" value="{{ $mealSuggestion['meal_type'] ?? $selectedMealType }}">
+                                            <button type="submit" class="px-3 py-1 text-sm bg-green-600 text-white rounded-sm hover:bg-green-700 whitespace-nowrap">
+                                                Accept
+                                            </button>
+                                        </form>
+                                        <a href="{{ route('meals.customize-suggestion', [
+                                            'food_item_ids' => $mealSuggestion['food_items']->pluck('id')->toArray(),
+                                            'tag_ids' => $mealSuggestion['tags']->pluck('id')->toArray(),
+                                            'meal_type' => $mealSuggestion['meal_type'] ?? $selectedMealType
+                                        ]) }}" class="px-3 py-1 text-sm border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm hover:border-[#19140035] dark:hover:border-[#62605b] transition whitespace-nowrap">
+                                            Customize
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
+
+            @if($foodItemSuggestions->count() > 0)
+            <div class="bg-white dark:bg-[#161615] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] rounded-lg p-6 mb-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                    <h2 class="text-xl font-semibold">Suggested Food Items</h2>
+                    <form method="GET" action="{{ route('meals.customize-suggestion') }}" id="addSelectedItemsForm" style="display: none;">
+                        <div id="selectedFoodItemIdsContainer"></div>
+                        <div id="selectedTagIdsContainer"></div>
+                        <input type="hidden" name="meal_type" value="{{ $nextMealType }}">
+                        <button type="submit" class="w-full sm:w-auto px-4 py-2 text-sm bg-[#1b1b18] dark:bg-[#eeeeec] text-white dark:text-[#1C1C1A] rounded-sm hover:bg-black dark:hover:bg-white transition">
+                            Add Selected to Meal
+                        </button>
+                    </form>
+                </div>
+                <ul class="space-y-3">
+                    @foreach($foodItemSuggestions as $foodItem)
+                        <li class="p-3 border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm">
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                <div class="flex items-start gap-3 flex-1 min-w-0">
+                                    <input type="checkbox" 
+                                           name="selected_food_items[]" 
+                                           value="{{ $foodItem->id }}" 
+                                           class="food-item-checkbox mt-1 flex-shrink-0"
+                                           data-food-item-id="{{ $foodItem->id }}"
+                                           data-tag-ids="{{ $foodItem->tags->pluck('id')->toJson() }}"
+                                           onchange="updateAddButton()">
+                                    <div class="flex-1 min-w-0">
+                                        <span class="font-medium break-words">{{ $foodItem->name }}</span>
+                                        @if($foodItem->tags->count() > 0)
+                                            <div class="mt-1 flex flex-wrap gap-1">
+                                                @foreach($foodItem->tags as $tag)
+                                                    @php
+                                                        $bgColor = $tag->category && $tag->category->color 
+                                                            ? $tag->category->color 
+                                                            : 'bg-gray-100 dark:bg-gray-800';
+                                                        $textColor = $tag->category && $tag->category->color 
+                                                            ? 'text-white' 
+                                                            : '';
+                                                    @endphp
+                                                    <span class="text-xs px-2 py-0.5 rounded {{ $bgColor }} {{ $textColor }}" 
+                                                          @if($tag->category && $tag->category->color)
+                                                              style="background-color: {{ $tag->category->color }};"
+                                                          @endif>
+                                                        {{ $tag->name }}
+                                                    </span>
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                                <span class="text-sm text-[#706f6c] dark:text-[#A1A09A] whitespace-nowrap flex-shrink-0 sm:ml-4">
+                                    @if($foodItem->last_eaten_date)
+                                        @php
+                                            // Parse as UTC (how it's stored) and convert to app timezone for display
+                                            $lastEaten = \Carbon\Carbon::parse($foodItem->last_eaten_date, 'UTC')
+                                                ->setTimezone(config('app.timezone'));
+                                            $now = \Carbon\Carbon::now(config('app.timezone'));
+                                        @endphp
+                                        <span title="{{ $lastEaten->toIso8601String() }}">
+                                            Last eaten: {{ $lastEaten->diffForHumans($now) }}
+                                        </span>
+                                    @else
+                                        Never eaten
+                                    @endif
+                                </span>
+                            </div>
                         </li>
                     @endforeach
                 </ul>
