@@ -56,7 +56,7 @@
                                 <div class="food-item-row border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm p-3">
                                     <div class="flex gap-2 mb-2">
                                         <input type="text" name="food_items[]" value="{{ $foodItemName }}" placeholder="Enter food item" list="foodItemsList" class="flex-1 px-4 py-2 border border-[#e3e3e0] dark:border-[#3E3E3A] bg-white dark:bg-[#161615] rounded-sm" required>
-                                        <button type="button" onclick="removeFoodItem(this)" class="px-4 py-2 bg-red-600 text-white rounded-sm hover:bg-red-700">Remove</button>
+                                        <button type="button" onclick="removeFoodItem(this)" class="px-4 py-2 bg-red-600 text-white rounded-sm hover:bg-red-700">X</button>
                                     </div>
                                     @if($foodItemTags->count() > 0)
                                         <div class="food-item-tags">
@@ -88,7 +88,7 @@
                             <div class="food-item-row border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm p-3">
                                 <div class="flex gap-2 mb-2">
                                     <input type="text" name="food_items[]" placeholder="Enter food item (e.g., Chicken, Rice, Broccoli)" list="foodItemsList" class="flex-1 px-4 py-2 border border-[#e3e3e0] dark:border-[#3E3E3A] bg-white dark:bg-[#161615] rounded-sm" required>
-                                    <button type="button" onclick="removeFoodItem(this)" class="px-4 py-2 bg-red-600 text-white rounded-sm hover:bg-red-700">Remove</button>
+                                    <button type="button" onclick="removeFoodItem(this)" class="px-4 py-2 bg-red-600 text-white rounded-sm hover:bg-red-700">X</button>
                                 </div>
                                 @if($foodItemTags->count() > 0)
                                     <div class="food-item-tags">
@@ -196,7 +196,7 @@
             div.innerHTML = `
                 <div class="flex gap-2 mb-2">
                     <input type="text" name="food_items[]" placeholder="Enter food item" list="foodItemsList" class="flex-1 px-4 py-2 border border-[#e3e3e0] dark:border-[#3E3E3A] bg-white dark:bg-[#161615] rounded-sm" required>
-                    <button type="button" onclick="removeFoodItem(this)" class="px-4 py-2 bg-red-600 text-white rounded-sm hover:bg-red-700">Remove</button>
+                    <button type="button" onclick="removeFoodItem(this)" class="px-4 py-2 bg-red-600 text-white rounded-sm hover:bg-red-700">X</button>
                 </div>
                 ${tagsHtml}
             `;
