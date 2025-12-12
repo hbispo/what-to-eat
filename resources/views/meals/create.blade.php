@@ -50,9 +50,15 @@
                     <div id="foodItemsContainer" class="space-y-2">
                         @php
                             $prefilledFoodItems = old('food_items', $prefilledData['food_items'] ?? []);
+                            $prefilledFoodItemTags = old('food_item_tags', []);
                         @endphp
                         @if(!empty($prefilledFoodItems))
-                            @foreach($prefilledFoodItems as $index => $foodItemName)
+                            @foreach($prefilledFoodItems as $index => $foodItemData)
+                                @php
+                                    // Handle both old format (string) and new format (array with name and tags)
+                                    $foodItemName = is_array($foodItemData) ? $foodItemData['name'] : $foodItemData;
+                                    $foodItemTagIds = is_array($foodItemData) ? ($foodItemData['tags'] ?? []) : ($prefilledFoodItemTags[$index] ?? []);
+                                @endphp
                                 <div class="food-item-row border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm p-3">
                                     <div class="flex gap-2 mb-2">
                                         <input type="text" name="food_items[]" value="{{ $foodItemName }}" placeholder="Enter food item" list="foodItemsList" class="flex-1 px-4 py-2 border border-[#e3e3e0] dark:border-[#3E3E3A] bg-white dark:bg-[#161615] rounded-sm" required>
@@ -70,12 +76,13 @@
                                                         $textColor = $tag->category && $tag->category->color 
                                                             ? 'text-white' 
                                                             : '';
+                                                        $isChecked = in_array($tag->id, $foodItemTagIds);
                                                     @endphp
                                                     <label class="inline-flex items-center text-xs px-2 py-0.5 rounded border border-[#e3e3e0] dark:border-[#3E3E3A]"
                                                           @if($tag->category && $tag->category->color)
                                                               style="background-color: {{ $tag->category->color }}; border-color: {{ $tag->category->color }};"
                                                           @endif>
-                                                        <input type="checkbox" name="food_item_tags[{{ $index }}][]" value="{{ $tag->id }}" class="mr-1">
+                                                        <input type="checkbox" name="food_item_tags[{{ $index }}][]" value="{{ $tag->id }}" {{ $isChecked ? 'checked' : '' }} class="mr-1">
                                                         <span class="{{ $textColor }}">{{ $tag->name }}</span>
                                                     </label>
                                                 @endforeach

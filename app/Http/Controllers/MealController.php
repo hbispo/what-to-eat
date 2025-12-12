@@ -339,14 +339,28 @@ class MealController extends Controller
             return $tag->category && in_array($tag->category->applies_to, ['items', 'both']);
         })->values();
         
-        // Get suggested food item names
-        $suggestedFoodItems = FoodItem::whereIn('id', $validated['food_item_ids'])->get();
+        // Get suggested food items with their tags
+        $suggestedFoodItems = FoodItem::with(['tags' => function($query) {
+            $query->leftJoin('tag_categories', 'tags.tag_category_id', '=', 'tag_categories.id')
+                  ->select('tags.*')
+                  ->orderByRaw('COALESCE(tag_categories.name, \'zzz\') ASC')
+                  ->orderBy('tags.name');
+        }])->whereIn('id', $validated['food_item_ids'])->get();
+        
+        // Build food items array with their tags
+        $foodItemsData = [];
+        foreach ($suggestedFoodItems as $foodItem) {
+            $foodItemsData[] = [
+                'name' => $foodItem->name,
+                'tags' => $foodItem->tags->pluck('id')->toArray(),
+            ];
+        }
         
         // Pre-fill data
         $prefilledData = [
             'meal_type' => $validated['meal_type'],
             'date' => \Carbon\Carbon::now(config('app.timezone'))->format('Y-m-d'),
-            'food_items' => $suggestedFoodItems->pluck('name')->toArray(),
+            'food_items' => $foodItemsData,
             'tags' => $validated['tag_ids'] ?? [],
         ];
 
