@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PWA Installation Check</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+        .check { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .pass { background: #d4edda; color: #155724; }
+        .fail { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>PWA Installation Requirements Check</h1>
+    <div id="checks"></div>
+    
+    <script>
+        const checks = [];
+        
+        // Check 1: HTTPS
+        checks.push({
+            name: 'HTTPS Connection',
+            pass: window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1',
+            message: window.location.protocol === 'https:' ? 'Using HTTPS ✓' : 'Not using HTTPS (required for PWA)'
+        });
+        
+        // Check 2: Manifest
+        fetch('/manifest.json')
+            .then(response => {
+                checks.push({
+                    name: 'Manifest File',
+                    pass: response.ok,
+                    message: response.ok ? 'Manifest accessible ✓' : 'Manifest not found'
+                });
+                return response.json();
+            })
+            .then(manifest => {
+                checks.push({
+                    name: 'Manifest Valid JSON',
+                    pass: manifest && manifest.name && manifest.icons && manifest.icons.length > 0,
+                    message: manifest && manifest.name ? 'Manifest is valid ✓' : 'Manifest is invalid'
+                });
+                checks.push({
+                    name: 'Manifest Icons',
+                    pass: manifest.icons && manifest.icons.length >= 2,
+                    message: manifest.icons && manifest.icons.length >= 2 ? `Found ${manifest.icons.length} icons ✓` : 'Need at least 2 icons (192x192 and 512x512)'
+                });
+                checks.push({
+                    name: 'Manifest Display Mode',
+                    pass: manifest.display === 'standalone' || manifest.display === 'fullscreen',
+                    message: manifest.display === 'standalone' ? 'Display mode: standalone ✓' : `Display mode: ${manifest.display} (should be 'standalone')`
+                });
+                renderChecks();
+            })
+            .catch(error => {
+                checks.push({
+                    name: 'Manifest File',
+                    pass: false,
+                    message: 'Error loading manifest: ' + error.message
+                });
+                renderChecks();
+            });
+        
+        // Check 3: Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistration()
+                .then(registration => {
+                    checks.push({
+                        name: 'Service Worker Support',
+                        pass: true,
+                        message: 'Browser supports service workers ✓'
+                    });
+                    checks.push({
+                        name: 'Service Worker Registered',
+                        pass: registration !== null,
+                        message: registration ? 'Service worker is registered ✓' : 'Service worker not registered'
+                    });
+                    if (registration) {
+                        checks.push({
+                            name: 'Service Worker Active',
+                            pass: registration.active !== null,
+                            message: registration.active ? 'Service worker is active ✓' : 'Service worker is not active'
+                        });
+                    }
+                    renderChecks();
+                });
+        } else {
+            checks.push({
+                name: 'Service Worker Support',
+                pass: false,
+                message: 'Browser does not support service workers'
+            });
+            renderChecks();
+        }
+        
+        // Check 4: Icons
+        Promise.all([
+            fetch('/icon-192.png').then(r => r.ok),
+            fetch('/icon-512.png').then(r => r.ok)
+        ]).then(([icon192, icon512]) => {
+            checks.push({
+                name: 'Icon Files',
+                pass: icon192 && icon512,
+                message: icon192 && icon512 ? 'Both icon files accessible ✓' : `192px: ${icon192 ? '✓' : '✗'}, 512px: ${icon512 ? '✓' : '✗'}`
+            });
+            renderChecks();
+        });
+        
+        function renderChecks() {
+            const container = document.getElementById('checks');
+            container.innerHTML = checks.map(check => `
+                <div class="check ${check.pass ? 'pass' : 'fail'}">
+                    <strong>${check.name}:</strong> ${check.message}
+                </div>
+            `).join('');
+            
+            const allPass = checks.length > 0 && checks.every(c => c.pass);
+            if (allPass && checks.length >= 8) {
+                container.innerHTML += `
+                    <div class="check info">
+                        <strong>All checks passed!</strong> Your PWA should be installable. 
+                        Try: Menu → "Add to Home screen" or "Install app"
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
+

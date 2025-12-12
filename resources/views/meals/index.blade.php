@@ -340,9 +340,14 @@
         // Register service worker for PWA caching
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('{{ asset('sw.js') }}')
+                navigator.serviceWorker.register('{{ asset('sw.js') }}', { scope: '/' })
                     .then((registration) => {
                         console.log('ServiceWorker registered successfully:', registration.scope);
+                        
+                        // Check if app can be installed
+                        if (registration.active) {
+                            console.log('Service worker is active and ready');
+                        }
                         
                         // Invalidate cache for this page if we have a success message (indicating a redirect after mutation)
                         @if(session('success'))
@@ -363,6 +368,14 @@
                     });
             });
         }
+        
+        // Listen for beforeinstallprompt event (for install button)
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('PWA install prompt available');
+            e.preventDefault();
+            deferredPrompt = e;
+        });
     </script>
 </body>
 </html>

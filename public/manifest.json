@@ -2,7 +2,7 @@
     "name": "What To Eat",
     "short_name": "WhatToEat",
     "description": "Track your meals and get suggestions for what you haven't eaten in a while",
-    "start_url": "/?utm_source=pwa",
+    "start_url": "/",
     "scope": "/",
     "display": "standalone",
     "background_color": "#FDFDFC",
@@ -20,7 +20,7 @@
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "any maskable"
-        },
+        }
     ]
 }
 
