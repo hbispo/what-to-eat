@@ -1,61 +1,340 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# What To Eat - Meal Planner
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Progressive Web App (PWA) for tracking meals and getting suggestions based on what you haven't eaten in a while. Built with Laravel and featuring offline support.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Meal Tracking**: Record meals with food items, meal types (breakfast, lunch, snack, dinner), and timestamps
+- **Smart Suggestions**: Get suggestions for meal combinations and individual food items you haven't eaten recently
+- **Tagging System**: Organize meals and food items with tags and tag categories
+- **Filtering**: Filter suggestions by meal type and tags
+- **Food Item Management**: View, edit, and delete food items
+- **Meal History**: View all your recorded meals with pagination
+- **Offline Support**: View cached pages (suggestions, meal history) even when offline
+- **PWA Ready**: Install as a standalone app on mobile devices
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Requirements
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.3 or higher
+- Composer
+- Node.js and npm
+- SQLite (or MySQL/PostgreSQL)
+- Apache with mod_rewrite enabled
+- OpenSSL (for SSL certificate generation)
 
-## Learning Laravel
+## Installation
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 1. Clone the Repository
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+```bash
+git clone <repository-url>
+cd what-to-eat
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 2. Install PHP Dependencies
 
-## Laravel Sponsors
+```bash
+composer install
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 3. Install Node Dependencies
 
-### Premium Partners
+```bash
+npm install
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development/)**
-- **[Active Logic](https://activelogic.com)**
+### 4. Environment Configuration
 
-## Contributing
+Copy the `.env.example` file to `.env`:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+cp .env.example .env
+```
 
-## Code of Conduct
+Generate the application key:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+php artisan key:generate
+```
 
-## Security Vulnerabilities
+Edit `.env` and configure:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```env
+APP_NAME="What To Eat"
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://app.whattoeat.lan
+APP_TIMEZONE=America/New_York  # Set your timezone
 
-## License
+DB_CONNECTION=sqlite
+# DB_DATABASE will default to database/database.sqlite
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 5. Create SQLite Database
+
+```bash
+touch database/database.sqlite
+```
+
+### 6. Run Migrations
+
+```bash
+php artisan migrate
+```
+
+### 7. Build Frontend Assets
+
+For production:
+
+```bash
+npm run build
+```
+
+For development (with hot reload):
+
+```bash
+npm run dev
+```
+
+### 8. Set Permissions
+
+Ensure the web server can write to the database directory:
+
+```bash
+sudo chown -R www-data:www-data database/
+sudo chmod 775 database/
+sudo chmod 664 database/database.sqlite
+```
+
+### 9. Configure Apache
+
+#### Option A: Using a Virtual Host (Recommended)
+
+Create a virtual host configuration pointing to the `public` directory:
+
+```apache
+<VirtualHost *:80>
+    ServerName app.whattoeat.lan
+    DocumentRoot /var/www/html/what-to-eat/public
+
+    <Directory /var/www/html/what-to-eat/public>
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+```
+
+#### Option B: Using Document Root
+
+If your Apache document root is `/var/www/html`, create a symlink or configure the document root to point to the `public` directory.
+
+### 10. Enable HTTPS (Required for PWA)
+
+Run the SSL setup script:
+
+```bash
+./setup-ssl.sh
+```
+
+This will:
+- Enable Apache SSL module
+- Generate a self-signed certificate for `app.whattoeat.lan`
+- Create HTTPS virtual host
+- Create HTTP to HTTPS redirect
+
+**Note**: You'll need to accept the self-signed certificate warning in your browser.
+
+### 11. Update Hosts File (Optional)
+
+If using a custom domain, add it to `/etc/hosts`:
+
+```
+127.0.0.1 app.whattoeat.lan
+```
+
+### 12. Clear Cache
+
+```bash
+php artisan config:clear
+php artisan cache:clear
+php artisan route:clear
+php artisan view:clear
+```
+
+## Usage
+
+### Accessing the App
+
+- **Web**: `https://app.whattoeat.lan` (or your configured domain)
+- **Development**: `http://localhost:8000` (if using `php artisan serve`)
+
+### Basic Workflow
+
+1. **Add a Meal**: Click "Add Meal" and enter food items, select meal type, date, and optional tags
+2. **View Suggestions**: The home page shows meal combinations and food items you haven't eaten recently
+3. **Filter Suggestions**: Use meal type filters (Breakfast/Snack, Lunch/Dinner) and tag filters
+4. **Accept Suggestions**: Click "Accept" to quickly add a suggested meal, or "Customize" to modify it first
+5. **Manage Food Items**: View, edit, or delete food items from the "Manage Food Items" page
+6. **Manage Tags**: Create tag categories and tags to organize your meals
+
+### Meal Types and Default Times
+
+- **Breakfast**: 8:00 AM
+- **Lunch**: 12:00 PM
+- **Snack**: 5:00 PM
+- **Dinner**: 9:00 PM
+
+Times are automatically set based on the meal type and your configured timezone.
+
+## Installing as a Mobile App (PWA)
+
+### Android (Chrome/Edge)
+
+1. Open the app in Chrome or Edge
+2. Tap the menu (three dots) → "Install app" or "Add to Home screen"
+3. Tap "Install" or "Add"
+4. The app icon will appear on your home screen
+
+### iOS (Safari)
+
+1. Open the app in Safari
+2. Tap the Share button (square with arrow)
+3. Scroll and tap "Add to Home Screen"
+4. Tap "Add"
+5. The app icon will appear on your home screen
+
+### After Installation
+
+- Opens without browser UI (standalone mode)
+- Works offline for viewing cached pages
+- Appears on home screen like a native app
+
+## Development
+
+### Running in Development Mode
+
+```bash
+# Terminal 1: Start Laravel development server
+php artisan serve
+
+# Terminal 2: Start Vite dev server (with hot reload)
+npm run dev
+```
+
+### Building for Production
+
+```bash
+npm run build
+```
+
+### Running Migrations
+
+```bash
+php artisan migrate
+```
+
+### Creating New Migrations
+
+```bash
+php artisan make:migration create_example_table
+```
+
+## Project Structure
+
+```
+what-to-eat/
+├── app/
+│   ├── Http/
+│   │   └── Controllers/
+│   │       ├── MealController.php
+│   │       ├── FoodItemController.php
+│   │       └── TagController.php
+│   └── Models/
+│       ├── Meal.php
+│       ├── FoodItem.php
+│       ├── Tag.php
+│       └── TagCategory.php
+├── database/
+│   ├── migrations/
+│   └── database.sqlite
+├── public/
+│   ├── sw.js (Service Worker)
+│   ├── manifest.json (PWA Manifest)
+│   ├── icon-192.png
+│   ├── icon-512.png
+│   └── index.php
+├── resources/
+│   ├── views/
+│   │   ├── meals/
+│   │   ├── food-items/
+│   │   └── tags/
+│   ├── css/
+│   └── js/
+└── routes/
+    └── web.php
+```
+
+## Troubleshooting
+
+### 419 Page Expired Error
+
+- Ensure `@csrf` is in all forms
+- Clear Laravel cache: `php artisan config:clear`
+- Check session driver in `.env` (should be `file` for local development)
+
+### Database Permission Errors
+
+```bash
+sudo chown -R www-data:www-data database/
+sudo chmod 775 database/
+sudo chmod 664 database/database.sqlite
+```
+
+### Service Worker Not Registering
+
+- Ensure you're using HTTPS (or localhost)
+- Check browser console for errors
+- Verify service worker file is accessible at `/sw.js`
+- Clear browser cache and reload
+
+### PWA Not Installing
+
+- Verify HTTPS is working
+- Check that service worker is active (DevTools → Application → Service Workers)
+- Verify manifest is valid (DevTools → Application → Manifest)
+- Ensure icons are accessible
+- Visit `/pwa-check.html` for diagnostic information
+
+### Vite Assets Not Loading
+
+- Run `npm run build` for production
+- Or run `npm run dev` for development
+- Check that Vite dev server is running if using development mode
+
+## Configuration
+
+### Timezone
+
+Set your timezone in `.env`:
+
+```env
+APP_TIMEZONE=America/New_York
+```
+
+Then clear config cache:
+
+```bash
+php artisan config:clear
+```
+
+### Meal Type Times
+
+Default meal times are defined in `MealController::getMealTimes()`. Times are set in your configured timezone and stored as UTC in the database.
+
+## Security Notes
+
+- SSL certificates (`*.key`, `*.crt`) are in `.gitignore` and should not be committed
+- Self-signed certificates are for local development only
+- For production, use proper SSL certificates from a trusted CA
+- Keep `.env` file secure and never commit it
