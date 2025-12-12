@@ -10,7 +10,9 @@ class TagController extends Controller
 {
     public function index()
     {
-        $categories = TagCategory::with('tags')->orderBy('name')->get();
+        $categories = TagCategory::with(['tags' => function($query) {
+            $query->orderBy('name');
+        }])->orderBy('name')->get();
         $tagsWithoutCategory = Tag::whereNull('tag_category_id')->orderBy('name')->get();
         
         return view('tags.index', compact('categories', 'tagsWithoutCategory'));

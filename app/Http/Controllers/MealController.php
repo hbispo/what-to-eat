@@ -131,7 +131,12 @@ class MealController extends Controller
         $selectedMealType = $mealTypeInput;
         
         // Get meal combinations (meals with their food items) that haven't been eaten for the longest time
-        $mealQuery = Meal::with(['foodItems', 'tags']);
+        $mealQuery = Meal::with(['foodItems', 'tags' => function($query) {
+            $query->leftJoin('tag_categories', 'tags.tag_category_id', '=', 'tag_categories.id')
+                  ->select('tags.*')
+                  ->orderByRaw('COALESCE(tag_categories.name, \'zzz\') ASC')
+                  ->orderBy('tags.name');
+        }]);
 
         if ($userId) {
             $mealQuery->where(function($q) use ($userId) {
@@ -200,8 +205,13 @@ class MealController extends Controller
         
         // Convert to collection and sort by last eaten date (oldest first, nulls first)
         $mealSuggestions = collect($mealCombinations)->map(function($combination, $signature) {
-            // Load tag models from IDs
-            $tags = Tag::whereIn('id', $combination['tags']->toArray())->get();
+            // Load tag models from IDs, ordered by category name and tag name
+            $tags = Tag::whereIn('tags.id', $combination['tags']->toArray())
+                ->leftJoin('tag_categories', 'tags.tag_category_id', '=', 'tag_categories.id')
+                ->select('tags.*')
+                ->orderByRaw('COALESCE(tag_categories.name, \'zzz\') ASC')
+                ->orderBy('tags.name')
+                ->get();
             
             return [
                 'food_items' => $combination['food_items'],
@@ -244,10 +254,20 @@ class MealController extends Controller
             ->limit(10)
             ->get();
 
-        $tags = Tag::with('category')->orderBy('name')->get();
+        $tags = Tag::with('category')
+            ->leftJoin('tag_categories', 'tags.tag_category_id', '=', 'tag_categories.id')
+            ->select('tags.*')
+            ->orderByRaw('COALESCE(tag_categories.name, \'zzz\') ASC')
+            ->orderBy('tags.name')
+            ->get();
         
-        // Load tags for food item suggestions
-        $foodItemSuggestions->load('tags');
+        // Load tags for food item suggestions, ordered by category name and tag name
+        $foodItemSuggestions->load(['tags' => function($query) {
+            $query->leftJoin('tag_categories', 'tags.tag_category_id', '=', 'tag_categories.id')
+                  ->select('tags.*')
+                  ->orderByRaw('COALESCE(tag_categories.name, \'zzz\') ASC')
+                  ->orderBy('tags.name');
+        }]);
         
         // Get the next meal type for default when adding selected items
         $nextMealType = $this->getNextMealType();
@@ -304,7 +324,12 @@ class MealController extends Controller
         $foodItems = FoodItem::orderBy('name')->get();
         
         // Filter tags based on applies_to
-        $allTags = Tag::with('category')->orderBy('name')->get();
+        $allTags = Tag::with('category')
+            ->leftJoin('tag_categories', 'tags.tag_category_id', '=', 'tag_categories.id')
+            ->select('tags.*')
+            ->orderByRaw('COALESCE(tag_categories.name, \'zzz\') ASC')
+            ->orderBy('tags.name')
+            ->get();
         $mealTags = $allTags->filter(function($tag) {
             // Only include tags that have a category and it applies to meals or both
             return $tag->category && in_array($tag->category->applies_to, ['meals', 'both']);
@@ -333,7 +358,12 @@ class MealController extends Controller
         $foodItems = FoodItem::orderBy('name')->get();
         
         // Filter tags based on applies_to
-        $allTags = Tag::with('category')->orderBy('name')->get();
+        $allTags = Tag::with('category')
+            ->leftJoin('tag_categories', 'tags.tag_category_id', '=', 'tag_categories.id')
+            ->select('tags.*')
+            ->orderByRaw('COALESCE(tag_categories.name, \'zzz\') ASC')
+            ->orderBy('tags.name')
+            ->get();
         $mealTags = $allTags->filter(function($tag) {
             // Only include tags that have a category and it applies to meals or both
             return $tag->category && in_array($tag->category->applies_to, ['meals', 'both']);
@@ -413,7 +443,12 @@ class MealController extends Controller
     {
         $userId = Auth::id();
         
-        $meals = Meal::with(['foodItems', 'tags'])
+        $meals = Meal::with(['foodItems', 'tags' => function($query) {
+                $query->leftJoin('tag_categories', 'tags.tag_category_id', '=', 'tag_categories.id')
+                      ->select('tags.*')
+                      ->orderByRaw('COALESCE(tag_categories.name, \'zzz\') ASC')
+                      ->orderBy('tags.name');
+            }])
             ->where(function($query) use ($userId) {
                 if ($userId) {
                     $query->where('user_id', $userId)
@@ -436,10 +471,20 @@ class MealController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $meal->load(['foodItems', 'tags']);
+        $meal->load(['foodItems', 'tags' => function($query) {
+            $query->leftJoin('tag_categories', 'tags.tag_category_id', '=', 'tag_categories.id')
+                  ->select('tags.*')
+                  ->orderByRaw('COALESCE(tag_categories.name, \'zzz\') ASC')
+                  ->orderBy('tags.name');
+        }]);
         
         // Filter tags based on applies_to
-        $allTags = Tag::with('category')->orderBy('name')->get();
+        $allTags = Tag::with('category')
+            ->leftJoin('tag_categories', 'tags.tag_category_id', '=', 'tag_categories.id')
+            ->select('tags.*')
+            ->orderByRaw('COALESCE(tag_categories.name, \'zzz\') ASC')
+            ->orderBy('tags.name')
+            ->get();
         $mealTags = $allTags->filter(function($tag) {
             // Only include tags that have a category and it applies to meals or both
             return $tag->category && in_array($tag->category->applies_to, ['meals', 'both']);

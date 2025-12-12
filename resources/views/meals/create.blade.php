@@ -139,9 +139,6 @@
                                   @endif>
                                 <input type="checkbox" name="tags[]" value="{{ $tag->id }}" {{ in_array($tag->id, $prefilledTagIds) ? 'checked' : '' }} class="mr-2">
                                 <span class="text-sm {{ $textColor }}">{{ $tag->name }}</span>
-                                @if($tag->category)
-                                    <span class="ml-1 text-xs {{ $textColor ? 'opacity-80' : 'text-[#706f6c] dark:text-[#A1A09A]' }}">({{ $tag->category->name }})</span>
-                                @endif
                             </label>
                         @endforeach
                     </div>

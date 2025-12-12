@@ -10,7 +10,12 @@ class FoodItemController extends Controller
 {
     public function index()
     {
-        $foodItems = FoodItem::with(['tags.category', 'meals'])
+        $foodItems = FoodItem::with(['tags' => function($query) {
+                $query->leftJoin('tag_categories', 'tags.tag_category_id', '=', 'tag_categories.id')
+                      ->select('tags.*')
+                      ->orderByRaw('COALESCE(tag_categories.name, \'zzz\') ASC')
+                      ->orderBy('tags.name');
+            }, 'tags.category', 'meals'])
             ->withCount('meals')
             ->orderBy('name')
             ->get();
@@ -20,10 +25,20 @@ class FoodItemController extends Controller
 
     public function edit(FoodItem $foodItem)
     {
-        $foodItem->load('tags');
+        $foodItem->load(['tags' => function($query) {
+            $query->leftJoin('tag_categories', 'tags.tag_category_id', '=', 'tag_categories.id')
+                  ->select('tags.*')
+                  ->orderByRaw('COALESCE(tag_categories.name, \'zzz\') ASC')
+                  ->orderBy('tags.name');
+        }]);
         
         // Filter tags based on applies_to (only items or both)
-        $allTags = Tag::with('category')->orderBy('name')->get();
+        $allTags = Tag::with('category')
+            ->leftJoin('tag_categories', 'tags.tag_category_id', '=', 'tag_categories.id')
+            ->select('tags.*')
+            ->orderByRaw('COALESCE(tag_categories.name, \'zzz\') ASC')
+            ->orderBy('tags.name')
+            ->get();
         $foodItemTags = $allTags->filter(function($tag) {
             return $tag->category && in_array($tag->category->applies_to, ['items', 'both']);
         })->values();
