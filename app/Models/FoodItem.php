@@ -18,5 +18,10 @@ class FoodItem extends Model
     {
         return $this->belongsToMany(Meal::class, 'meal_food_item')->withTimestamps();
     }
+
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class, 'food_item_tag')->withTimestamps();
+    }
 }
 
